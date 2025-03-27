@@ -24,6 +24,11 @@
 #define ASU_INJECT_PLIST_PATH jbroot(L_LAUNCHDAEMON_PATH "/ai.akemi.asu_inject.plist")
 #define ASU_INJECT_PLIST_PATH_OLD jbroot(L_LAUNCHDAEMON_PATH "/net.angelxwind.asu_inject.plist")
 
+// Define path constants for relative path components
+#define INSTALLD_PLIST_RELATIVE "/com.apple.mobile.installd.plist"
+#define ASU_INJECT_PLIST_RELATIVE "/ai.akemi.asu_inject.plist" 
+#define ASU_INJECT_PLIST_OLD_RELATIVE "/net.angelxwind.asu_inject.plist"
+
 typedef struct __CFUserNotification *CFUserNotificationRef;
 FOUNDATION_EXTERN CFUserNotificationRef CFUserNotificationCreate(CFAllocatorRef allocator, CFTimeInterval timeout, CFOptionFlags flags, SInt32 *error, CFDictionaryRef dictionary);
 FOUNDATION_EXTERN SInt32 CFUserNotificationReceiveResponse(CFUserNotificationRef userNotification, CFTimeInterval timeout, CFOptionFlags *responseFlags);
@@ -52,7 +57,17 @@ static int run_launchctl(const char *path, const char *cmd, bool is_installd) {
 }
 
 int main(int argc, const char **argv) {
-	l_launch_daemon_path = ROOT_PATH(L_LAUNCHDAEMON_PATH);
+	// Declare the variables with appropriate buffer sizes
+	char l_launch_daemon_path[PATH_MAX];
+	char l_installd_plist_path[PATH_MAX];
+	char asu_inject_plist_path[PATH_MAX];
+	char asu_inject_plist_old_path[PATH_MAX];
+	const char *installd_plist_path = INSTALLD_PLIST_RELATIVE;
+	const char *asu_inject_plist_rpath = ASU_INJECT_PLIST_RELATIVE;
+	const char *asu_inject_plist_old_rpath = ASU_INJECT_PLIST_OLD_RELATIVE;
+	
+	// Now use the variables
+	strcpy(l_launch_daemon_path, ROOT_PATH(L_LAUNCHDAEMON_PATH));
 	strcpy(l_installd_plist_path, l_launch_daemon_path);
 	strcat(l_installd_plist_path, installd_plist_path);
 	strcpy(asu_inject_plist_path, l_launch_daemon_path);
